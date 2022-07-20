@@ -1,5 +1,9 @@
 package TypewiseAlert;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.logging.Logger;
+
 public class TypewiseAlert 
 {
     public enum BreachType {
@@ -21,24 +25,21 @@ public class TypewiseAlert
       HI_ACTIVE_COOLING,
       MED_ACTIVE_COOLING
     };
+   
+   
+    public static void main(String[] args) throws ClassNotFoundException, InstantiationException, IllegalAccessException 
+    {
+    	
+        
+         CoolingLimitsInterface l=mapping.get("PASSIVE_COOLING");
+         System.out.println(mapping.get("PASSIVE_COOLING").getUpperLimit());
+    }
+    static Map<String,CoolingLimitsInterface> mapping=new HashMap<String,CoolingLimitsInterface>();
     public static BreachType classifyTemperatureBreach(
         CoolingType coolingType, double temperatureInC) {
-      int lowerLimit = 0;
-      int upperLimit = 0;
-      switch(coolingType) {
-        case PASSIVE_COOLING:
-          lowerLimit = 0;
-          upperLimit = 35;
-          break;
-        case HI_ACTIVE_COOLING:
-          lowerLimit = 0;
-          upperLimit = 45;
-          break;
-        case MED_ACTIVE_COOLING:
-          lowerLimit = 0;
-          upperLimit = 40;
-          break;
-      }
+      int lowerLimit =mapping.get(coolingType.toString()).getLowerLimit();
+      int upperLimit = mapping.get(coolingType.toString()).getUpperLimit();
+    
       return inferBreach(temperatureInC, lowerLimit, upperLimit);
     }
     public enum AlertTarget{
@@ -49,9 +50,36 @@ public class TypewiseAlert
       public CoolingType coolingType;
       public String brand;
     }
+    public static void setCoolingMap() {
+    	 for(CoolingType c:CoolingType.values())
+         {
+        	 Class c1 = null;
+			try {
+				c1 = Class.forName("TypewiseAlert."+c.toString());
+			} catch (ClassNotFoundException e) {
+				e.printStackTrace();
+			}
+        	 
+        	 CoolingLimitsInterface p1;
+			try {
+				p1 = (CoolingLimitsInterface) c1.newInstance();
+				  mapping.put(c.toString(),p1); 
+			} catch (InstantiationException e) {
+				
+				e.printStackTrace();
+			} catch (IllegalAccessException e) {
+				
+				e.printStackTrace();
+			}
+        	  
+         }
+    }
     public static void checkAndAlert(
         AlertTarget alertTarget, BatteryCharacter batteryChar, double temperatureInC) {
-
+      
+    	setCoolingMap();
+    	
+    	
       BreachType breachType = classifyTemperatureBreach(
         batteryChar.coolingType, temperatureInC
       );
