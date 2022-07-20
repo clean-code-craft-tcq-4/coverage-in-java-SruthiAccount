@@ -56,14 +56,17 @@ public class TypewiseAlert
         batteryChar.coolingType, temperatureInC
       );
 
-      switch(alertTarget) {
-        case TO_CONTROLLER:
-          sendToController(breachType);
-          break;
-        case TO_EMAIL:
-          sendToEmail(breachType);
-          break;
-      }
+      sendAlert(alertTarget,breachType);
+    }
+    public static void sendAlert(AlertTarget alertTarget,BreachType breachType) {
+    	 switch(alertTarget) {
+         case TO_CONTROLLER:
+           sendToController(breachType);
+           break;
+         case TO_EMAIL:
+           sendToEmail(breachType);
+           break;
+       }
     }
     public static void sendToController(BreachType breachType) {
       int header = 0xfeed;
@@ -80,8 +83,7 @@ public class TypewiseAlert
           System.out.printf("To: %s\n", recepient);
           System.out.println("Hi, the temperature is too high\n");
           break;
-        case NORMAL:
-          break;
+      
       }
     }
 }
