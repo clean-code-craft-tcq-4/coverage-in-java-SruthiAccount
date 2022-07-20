@@ -27,14 +27,7 @@ public class TypewiseAlert
     };
    
    
-    public static void main(String[] args) throws ClassNotFoundException, InstantiationException, IllegalAccessException 
-    {
-    	
-        
-         CoolingLimitsInterface l=mapping.get("PASSIVE_COOLING");
-         System.out.println(mapping.get("PASSIVE_COOLING").getUpperLimit());
-    }
-    static Map<String,CoolingLimitsInterface> mapping=new HashMap<String,CoolingLimitsInterface>();
+  static Map<String,CoolingLimitsInterface> mapping=new HashMap<String,CoolingLimitsInterface>();
     public static BreachType classifyTemperatureBreach(
         CoolingType coolingType, double temperatureInC) {
       int lowerLimit =mapping.get(coolingType.toString()).getLowerLimit();
@@ -50,32 +43,16 @@ public class TypewiseAlert
       public CoolingType coolingType;
       public String brand;
     }
-    public static void setCoolingMap() {
+    public static void setCoolingMap() throws ClassNotFoundException, InstantiationException, IllegalAccessException {
     	 for(CoolingType c:CoolingType.values())
          {
-        	 Class c1 = null;
-			try {
-				c1 = Class.forName("TypewiseAlert."+c.toString());
-			} catch (ClassNotFoundException e) {
-				e.printStackTrace();
-			}
-        	 
-        	 CoolingLimitsInterface p1;
-			try {
-				p1 = (CoolingLimitsInterface) c1.newInstance();
-				  mapping.put(c.toString(),p1); 
-			} catch (InstantiationException e) {
-				
-				e.printStackTrace();
-			} catch (IllegalAccessException e) {
-				
-				e.printStackTrace();
-			}
-        	  
+        	 Class c1 = Class.forName("TypewiseAlert."+c.toString());
+			 CoolingLimitsInterface p1=(CoolingLimitsInterface) c1.newInstance();
          }
+			
     }
     public static void checkAndAlert(
-        AlertTarget alertTarget, BatteryCharacter batteryChar, double temperatureInC) {
+        AlertTarget alertTarget, BatteryCharacter batteryChar, double temperatureInC) throws ClassNotFoundException, InstantiationException, IllegalAccessException {
       
     	setCoolingMap();
     	
